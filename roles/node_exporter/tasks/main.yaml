@@ -1,0 +1,47 @@
+---
+- name: Checking if node_exporter is installed
+  stat:
+    path: "/usr/local/bin/node_exporter"
+  register: node_exporter_stat
+
+- name: Creating a node_exporter user
+  user:
+    name: node_exporter
+    shell: /sbin/nologin
+    state: present
+    create_home: false
+  when: not node_exporter_stat.stat.exists
+
+- name: Downloading and extracting node_exporter
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus/node_exporter/releases/download/{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    dest: /tmp/
+    remote_src: true
+  when: not node_exporter_stat.stat.exists
+
+- name: Copying binary to /usr/local/bin
+  copy:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+    dest: /usr/local/bin/node_exporter
+    owner: node_exporter
+    group: node_exporter
+    mode: '0755'
+    remote_src: true
+  when: not node_exporter_stat.stat.exists
+
+- name: Creating systemd service file for node_exporter
+  template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart node_exporter
+
+- name: Enabling and starting node_exporter service
+  systemd:
+    name: node_exporter
+    state: started
+    daemon_reload: true
+    enabled: true

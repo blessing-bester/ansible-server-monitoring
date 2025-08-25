@@ -1,0 +1,18 @@
+---
+- name: Deploy Prometheus Node Exporter on all monitored hosts
+  hosts: monitored_hosts
+  become: true
+  roles:
+    - node_exporter
+
+- name: Deploy and Configure Prometheus Server
+  hosts: prometheus-server
+  become: true
+  roles:
+    - prometheus_server
+
+- name: Deploy and Configure Grafana Server
+  hosts: grafana-server
+  become: true
+  roles:
+    - grafana_server

@@ -1,0 +1,35 @@
+---
+- name: Installing dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - apt-transport-https
+    - software-properties-common
+    - wget
+
+- name: Adding Grafana GPG key
+  ansible.builtin.apt_key:
+    url: https://apt.grafana.com/gpg.key
+    state: present
+
+- name: Adding Grafana repository
+  ansible.builtin.apt_repository:
+    repo: "deb https://apt.grafana.com stable main"
+    state: present
+    update_cache: yes
+    filename: grafana
+
+- name: Installing Grafana OSS
+  ansible.builtin.apt:
+    name: grafana
+    state: present
+  notify:
+    - restart grafana
+
+- name: Enabling and starting Grafana service
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: true
