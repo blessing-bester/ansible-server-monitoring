@@ -51,4 +51,8 @@ ansible_python_interpreter=/usr/bin/python3
     * **Grafana UI**: Open your browser and navigate to `http://<grafana-server-ip>:3000`
         * The default login credentials are `admin`/`admin`. You will be prompted to change the password on the first login.
 
-![Ansible Infographic](https://ansible-monitoring-readme.netlify.app/)
+---
+### 🌐 View the Interactive Infographic
+
+[Click here to view the full, interactive website!](https://ansible-monitoring-readme.netlify.app/)
+---
